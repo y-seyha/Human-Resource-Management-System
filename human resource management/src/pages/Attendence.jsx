@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import MainLayout from "../components/Layouts/DashboardLayout";
-import SearchBar from "../components/ui/SearchBar";
+import PageHeader from "../components/ui/PageHeader";
+import KpiCard from "../components/ui/KpiCard";
 import ActionDropdown from "../components/ui/ActionDropdown";
 import { CSVLink } from "react-csv";
+import { FaUserCheck, FaUserTimes, FaUserClock } from "react-icons/fa";
 
 const Attendance = () => {
   const [search, setSearch] = useState("");
@@ -46,7 +48,7 @@ const Attendance = () => {
     },
   ];
 
-  // Filters and search
+  // Filters + search
   let filtered = attendanceData.filter(
     (emp) =>
       emp.name.toLowerCase().includes(search.toLowerCase()) &&
@@ -54,7 +56,7 @@ const Attendance = () => {
       (filterStatus ? emp.status === filterStatus : true),
   );
 
-  // Sort
+  // Sorting
   if (sortKey) {
     filtered.sort((a, b) =>
       sortKey === "hours"
@@ -77,45 +79,43 @@ const Attendance = () => {
 
   return (
     <MainLayout>
-      <div className="bg-gradient-to-r from-gray-100 to-blue-50 min-h-screen p-6">
-        {/* Header */}
-        <div className="mb-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-800">Attendance</h1>
-        </div>
+      <div className="bg-gray-50 min-h-screen p-6">
+        {/* Page Header */}
+        <PageHeader
+          title="Attendance"
+          searchValue={search}
+          onSearchChange={(e) => setSearch(e.target.value)}
+          buttonText="Mark Attendance"
+          onButtonClick={() => alert("Mark Attendance clicked")}
+        />
 
-        {/* Summary Cards */}
+        {/* KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white shadow rounded-lg p-4 text-center">
-            <h2 className="font-bold text-gray-600">Present Today</h2>
-            <p className="text-2xl font-bold text-green-600">
-              {attendanceData.filter((emp) => emp.status === "Present").length}
-            </p>
-          </div>
-          <div className="bg-white shadow rounded-lg p-4 text-center">
-            <h2 className="font-bold text-gray-600">Absent Today</h2>
-            <p className="text-2xl font-bold text-red-600">
-              {attendanceData.filter((emp) => emp.status === "Absent").length}
-            </p>
-          </div>
-          <div className="bg-white shadow rounded-lg p-4 text-center">
-            <h2 className="font-bold text-gray-600">Late Today</h2>
-            <p className="text-2xl font-bold text-yellow-600">
-              {attendanceData.filter((emp) => emp.status === "Late").length}
-            </p>
-          </div>
+          <KpiCard
+            title="Present Today"
+            value={attendanceData.filter((e) => e.status === "Present").length}
+            icon={FaUserCheck}
+            bgColor="bg-green-500"
+          />
+          <KpiCard
+            title="Absent Today"
+            value={attendanceData.filter((e) => e.status === "Absent").length}
+            icon={FaUserTimes}
+            bgColor="bg-red-500"
+          />
+          <KpiCard
+            title="Late Today"
+            value={attendanceData.filter((e) => e.status === "Late").length}
+            icon={FaUserClock}
+            bgColor="bg-yellow-500"
+          />
         </div>
 
-        {/* Filters & Search */}
+        {/* Filters + CSV Export */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 justify-between">
-          <div className="flex flex-1 gap-4">
-            <SearchBar
-              placeholder="Search by employee name..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1"
-            />
+          <div className="flex flex-1 gap-4 flex-wrap">
             <select
-              className="border rounded px-3 py-2"
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               value={filterDept}
               onChange={(e) => setFilterDept(e.target.value)}
             >
@@ -128,7 +128,7 @@ const Attendance = () => {
             </select>
 
             <select
-              className="border rounded px-3 py-2"
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
@@ -139,7 +139,7 @@ const Attendance = () => {
             </select>
 
             <select
-              className="border rounded px-3 py-2"
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value)}
             >
@@ -150,24 +150,22 @@ const Attendance = () => {
             </select>
           </div>
 
-          <div className="flex gap-2 mt-2 sm:mt-0">
-            <CSVLink
-              data={filtered}
-              filename={"attendance.csv"}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-            >
-              Export CSV
-            </CSVLink>
-          </div>
+          <CSVLink
+            data={filtered}
+            filename={"attendance.csv"}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-2 sm:mt-0"
+          >
+            Export CSV
+          </CSVLink>
         </div>
 
         {/* Bulk Actions */}
         {selectedRows.length > 0 && (
-          <div className="mb-4">
-            <span className="font-semibold mr-4">
+          <div className="mb-4 flex flex-wrap items-center gap-4">
+            <span className="font-semibold">
               {selectedRows.length} selected
             </span>
-            <button className="bg-yellow-500 text-white px-3 py-1 rounded mr-2 hover:bg-yellow-600 transition">
+            <button className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition">
               Mark Leave
             </button>
             <button className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition">
@@ -176,57 +174,74 @@ const Attendance = () => {
           </div>
         )}
 
-        {/* Attendance Table */}
-        <div className="bg-white shadow rounded overflow-x-auto">
-          <table className="min-w-full text-left divide-y divide-gray-200">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="p-3 text-center">Select</th>
-                <th className="p-3">Employee</th>
-                <th className="p-3">Department</th>
-                <th className="p-3">Date</th>
-                <th className="p-3">Check-in</th>
-                <th className="p-3">Check-out</th>
-                <th className="p-3">Hours</th>
-                <th className="p-3 text-center">Status</th>
-                <th className="p-3 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filtered.map((emp) => (
-                <tr key={emp.id} className="hover:bg-gray-50 transition">
-                  <td className="p-3 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedRows.includes(emp.id)}
-                      onChange={() => toggleSelect(emp.id)}
-                    />
-                  </td>
-                  <td className="p-3 font-medium">{emp.name}</td>
-                  <td className="p-3">{emp.department}</td>
-                  <td className="p-3">{emp.date}</td>
-                  <td className="p-3">{emp.checkIn}</td>
-                  <td className="p-3">{emp.checkOut}</td>
-                  <td className="p-3">{emp.hours}</td>
-                  <td className="p-3 text-center">
-                    <span
-                      className={`px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(
-                        emp.status,
-                      )}`}
-                    >
-                      {emp.status}
-                    </span>
-                  </td>
-                  <td className="p-3 text-center">
-                    <ActionDropdown
-                      onEdit={() => alert(`Edit attendance of ${emp.name}`)}
-                      onDelete={() => alert(`Mark leave for ${emp.name}`)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* Header Row for Desktop */}
+        <div className="hidden md:flex bg-gray-100 text-gray-600 font-semibold px-4 py-2 rounded-t-lg">
+          <div className="w-1/12 ">Select</div>
+          <div className="w-2/12">Employee</div>
+          <div className="w-2/12">Department</div>
+          <div className="w-2/12">Date</div>
+          <div className="w-1/12">Check-in</div>
+          <div className="w-1/12">Check-out</div>
+          <div className="w-1/12">Hours</div>
+          <div className="w-1/12 text-center">Status</div>
+          <div className="w-1/12 text-right">Actions</div>
+        </div>
+
+        {/* Attendance Cards */}
+        <div className="flex flex-col gap-4">
+          {filtered.length === 0 && (
+            <p className="text-center text-gray-500 mt-8">
+              No attendance records found.
+            </p>
+          )}
+
+          {filtered.map((emp) => (
+            <div
+              key={emp.id}
+              className="flex flex-col md:flex-row items-start md:items-center bg-white border-b border-gray-200 hover:bg-gray-50 px-4 py-4 md:py-3 rounded-lg transition"
+            >
+              {/* Checkbox */}
+              <div className="w-full md:w-1/12 flex justify-center md:justify-start">
+                <input
+                  type="checkbox"
+                  checked={selectedRows.includes(emp.id)}
+                  onChange={() => toggleSelect(emp.id)}
+                />
+              </div>
+
+              <div className="w-full md:w-2/12 font-medium text-gray-800">
+                {emp.name}
+              </div>
+              <div className="w-full md:w-2/12 text-gray-600">
+                {emp.department}
+              </div>
+              <div className="w-full md:w-2/12 text-gray-600">{emp.date}</div>
+              <div className="w-full md:w-1/12 text-gray-600">
+                {emp.checkIn}
+              </div>
+              <div className="w-full md:w-1/12 text-gray-600">
+                {emp.checkOut}
+              </div>
+              <div className="w-full md:w-1/12 text-gray-600">{emp.hours}</div>
+
+              <div className="w-full md:w-1/12 flex justify-center md:justify-start">
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${getStatusColor(
+                    emp.status,
+                  )}`}
+                >
+                  {emp.status}
+                </span>
+              </div>
+
+              <div className="w-full md:w-1/12 flex justify-end gap-2 mt-2 md:mt-0">
+                <ActionDropdown
+                  onEdit={() => alert(`Edit attendance of ${emp.name}`)}
+                  onDelete={() => alert(`Mark leave for ${emp.name}`)}
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </MainLayout>

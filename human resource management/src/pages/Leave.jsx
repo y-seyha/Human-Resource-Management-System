@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import MainLayout from "../components/Layouts/DashboardLayout";
 import PageHeader from "../components/ui/PageHeader";
-import ActionDropdown from "../components/ui/ActionDropdown";
 
 const LeaveManagement = () => {
   const [search, setSearch] = useState("");
@@ -48,7 +47,6 @@ const LeaveManagement = () => {
     if (status === "Pending") return "bg-yellow-100 text-yellow-700";
   };
 
-  // Filter leave requests
   const filteredRequests = leaveRequests.filter((req) => {
     const matchesSearch =
       req.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -58,10 +56,7 @@ const LeaveManagement = () => {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const leaveTypes = [
-    "All Status",
-    ...new Set(leaveRequests.map((r) => r.type)),
-  ];
+  const leaveTypes = ["All", ...new Set(leaveRequests.map((r) => r.type))];
   const statuses = ["All", "Pending", "Approved", "Rejected"];
 
   return (
@@ -103,8 +98,19 @@ const LeaveManagement = () => {
           </select>
         </div>
 
+        {/* Header Row */}
+        <div className="hidden md:flex bg-gray-100 text-gray-600 font-semibold px-4 py-2 rounded-t-lg">
+          <div className="w-1/12">#</div>
+          <div className="w-3/12">Employee</div>
+          <div className="w-2/12">Department</div>
+          <div className="w-2/12">Type</div>
+          <div className="w-3/12">Dates</div>
+          <div className="w-1/12">Status</div>
+          <div className="w-1/12 text-right">Actions</div>
+        </div>
+
         {/* Leave Cards */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col">
           {filteredRequests.length === 0 && (
             <p className="text-center text-gray-500 mt-8">
               No leave requests found.
@@ -116,30 +122,19 @@ const LeaveManagement = () => {
               key={req.id}
               className="flex flex-col md:flex-row items-start md:items-center bg-white border-b border-gray-200 hover:bg-gray-50 px-4 py-4 md:py-3 transition rounded-lg"
             >
-              {/* Index */}
               <div className="w-full md:w-1/12 font-medium text-gray-700">
                 {index + 1}
               </div>
-
-              {/* Employee Name */}
               <div className="w-full md:w-3/12 font-medium text-gray-800">
                 {req.name}
               </div>
-
-              {/* Department */}
               <div className="w-full md:w-2/12 text-gray-600">
                 {req.department}
               </div>
-
-              {/* Leave Type */}
               <div className="w-full md:w-2/12 text-gray-600">{req.type}</div>
-
-              {/* Dates */}
               <div className="w-full md:w-3/12 text-gray-600">
                 {req.start} → {req.end} ({req.days} days)
               </div>
-
-              {/* Status */}
               <div className="w-full md:w-1/12 flex justify-center md:justify-start">
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${getStatusColor(
@@ -149,8 +144,6 @@ const LeaveManagement = () => {
                   {req.status}
                 </span>
               </div>
-
-              {/* Actions */}
               <div className="w-full md:w-1/12 flex justify-end gap-2 mt-2 md:mt-0">
                 <button className="text-blue-600 hover:text-blue-800 transition">
                   <FaEdit />

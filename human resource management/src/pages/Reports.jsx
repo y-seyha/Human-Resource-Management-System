@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import MainLayout from "../components/Layouts/DashboardLayout";
+import KpiCard from "../components/ui/KpiCard";
 import { CSVLink } from "react-csv";
 import {
   LineChart,
@@ -13,6 +14,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { FaUsers, FaUserClock, FaUserCheck } from "react-icons/fa";
 
 const Reports = () => {
   const [filterDept, setFilterDept] = useState("");
@@ -21,7 +23,7 @@ const Reports = () => {
   // Example Departments
   const departments = ["IT", "HR", "Sales", "Marketing", "Finance"];
 
-  // Summary / Metrics Data
+  // Metrics Data
   const employees = [
     { id: 1, name: "Alice", department: "IT", status: "Active" },
     { id: 2, name: "Bob", department: "HR", status: "On Leave" },
@@ -96,24 +98,24 @@ const Reports = () => {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white shadow rounded-lg p-4 text-center">
-            <h2 className="font-bold text-gray-600">Total Employees</h2>
-            <p className="text-2xl font-bold text-gray-800">
-              {employees.length}
-            </p>
-          </div>
-          <div className="bg-white shadow rounded-lg p-4 text-center">
-            <h2 className="font-bold text-gray-600">Employees on Leave</h2>
-            <p className="text-2xl font-bold text-red-600">
-              {employees.filter((e) => e.status === "On Leave").length}
-            </p>
-          </div>
-          <div className="bg-white shadow rounded-lg p-4 text-center">
-            <h2 className="font-bold text-gray-600">Active Employees</h2>
-            <p className="text-2xl font-bold text-green-600">
-              {employees.filter((e) => e.status === "Active").length}
-            </p>
-          </div>
+          <KpiCard
+            title="Total Employees"
+            value={employees.length}
+            bgColor="bg-gray-800"
+            icon={FaUsers} // total employees icon
+          />
+          <KpiCard
+            title="Employees on Leave"
+            value={employees.filter((e) => e.status === "On Leave").length}
+            bgColor="bg-red-600"
+            icon={FaUserClock} // on leave icon
+          />
+          <KpiCard
+            title="Active Employees"
+            value={employees.filter((e) => e.status === "Active").length}
+            bgColor="bg-green-600"
+            icon={FaUserCheck} // active icon
+          />
         </div>
 
         {/* Filters */}
